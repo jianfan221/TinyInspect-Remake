@@ -15,6 +15,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Read version from TOC
+        run: |
+          VERSION_LINE="$(grep -E '^##[[:space:]]*Version:' TinyInspect-Remake.toc | head -n1)"
+          VERSION="$(echo "${VERSION_LINE#*:}" | tr -d '[:space:]')"
+          VERSION="${VERSION#v}"
+          if [ -z "$VERSION" ]; then
+            echo "Could not parse version from TinyInspect-Remake.toc"
+            exit 1
+          fi
+          echo "PACKAGE_VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "PACKAGE_FILE=TinyInspect-v${VERSION}.zip" >> "$GITHUB_ENV"
+
       - name: Create zip
         run: |
           mkdir -p dist/TinyInspect-Remake
@@ -27,11 +39,11 @@ jobs:
             Bindings.xml \
             dist/TinyInspect-Remake/
           cd dist
-          zip -r TinyInspect-Remake.zip TinyInspect-Remake \
+          zip -r "$PACKAGE_FILE" TinyInspect-Remake \
             -x "*.bk" -x "*.psd" -x "*.git*" -x "*.zip"
 
       - name: Upload Release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/TinyInspect-Remake.zip
+          files: dist/${{ env.PACKAGE_FILE }}
           body_path: CHANGELOG.md

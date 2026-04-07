@@ -5,6 +5,7 @@
 
 local LibEvent = LibStub:GetLibrary("LibEvent.7000")
 local LibItemInfo = LibStub:GetLibrary("LibItemInfo.7000")
+local GetItemUpgradeInfoAPI = C_Item and C_Item.GetItemUpgradeInfo
 
 --bliz func
 --裝備清單
@@ -78,6 +79,33 @@ elseif WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
 end
 
 local is_retail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
+
+local UPGRADE_TEXT_COLOR = "ffffd200"
+
+local function ColorizeUpgradeText(text)
+    if (not text) then
+        return ""
+    end
+
+    return format("|c%s%s|r", UPGRADE_TEXT_COLOR, text)
+end
+
+local function FormatInspectItemText(link, name)
+    if (not link or not is_retail or not GetItemUpgradeInfoAPI or not TinyInspectRemakeDB or not TinyInspectRemakeDB.ShowUpgradeInfo) then
+        return link or name or ""
+    end
+
+    local info = GetItemUpgradeInfoAPI(link)
+    if (not info or not info.trackString) then
+        return link
+    end
+
+    if (info.currentLevel ~= nil and info.maxLevel ~= nil) then
+        return format("%s %s", ColorizeUpgradeText(format("[%s %d/%d]", info.trackString, info.currentLevel, info.maxLevel)), link)
+    end
+
+    return format("%s %s", ColorizeUpgradeText(format("[%s]", info.trackString)), link)
+end
 
 
 --創建面板
@@ -227,15 +255,15 @@ function ShowInspectItemListFrame(unit, parent, ilevel, maxLevel)
         itemframe.itemString:SetWidth(0)
         if (level > 0) then
             itemframe.levelString:SetText(format(formats,level))
-            itemframe.itemString:SetText(link or name)
+            itemframe.itemString:SetText(FormatInspectItemText(link, name))
         else
             itemframe.levelString:SetText(format(formats,""))
             itemframe.itemString:SetText("")
         end
         itemframe.levelString:SetTextColor(1, 1, 1)
         itemwidth = itemframe.itemString:GetWidth()
-        if (itemwidth > 208) then
-            itemwidth = 208
+        if (itemwidth > 260) then
+            itemwidth = 260
             itemframe.itemString:SetWidth(itemwidth)
         end
         itemframe.width = itemwidth + max(64, floor(itemframe.label:GetWidth() + itemframe.levelString:GetWidth()) + 4)

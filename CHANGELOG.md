@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.2.0] 20226-04-07
+- Added upgrade info into inspect panel
+- Fixed an issue with professional material level display in Chatframe
+- Enchant and Gem slots will now using pre-defined info rather than user setting
+
 ## [v1.1.0] 2026-03-28
 - Update Enchant whitelist so that Midnight enchant can be displayed correctly
 - HUGE Performance improvements, now inspect should be instant

@@ -40,6 +40,18 @@ local DK_RUNE_ICON_BY_ID = {
     [6245] = 237535, -- 天启符文
 }
 
+local ENCHANT_SLOT_NAMES = {
+    [1]  = "HEADSLOT",
+    [3]  = "SHOULDERSLOT",
+    [5]  = "CHESTSLOT",
+    [7]  = "LEGSSLOT",
+    [8]  = "FEETSLOT",
+    [11] = "FINGER0SLOT",
+    [12] = "FINGER1SLOT",
+    [16] = "MAINHANDSLOT",
+    [17] = "SECONDARYHANDSLOT",
+}
+
 local function GetEnchantIcon(enchantID, isDeathKnight)
     if (isDeathKnight and enchantID and DK_RUNE_ICON_BY_ID[enchantID]) then
         return DK_RUNE_ICON_BY_ID[enchantID]
@@ -185,7 +197,7 @@ local function ShowGemAndEnchant(frame, ItemLink, anchorFrame, itemframe, isDeat
     end
     local enchantItemID, enchantID = LibItemEnchant:GetEnchantItemID(ItemLink)
     local enchantSpellID = LibItemEnchant:GetEnchantSpellID(ItemLink)
-    local EnchantParts = TinyInspectRemakeDB.EnchantParts or {}
+    local enchantSlotName = ENCHANT_SLOT_NAMES[itemframe.index]
     if (enchantItemID) then
         num = num + 1
         icon = GetIconFrame(frame)
@@ -217,11 +229,11 @@ local function ShowGemAndEnchant(frame, ItemLink, anchorFrame, itemframe, isDeat
         icon:SetPoint("LEFT", anchorFrame, "RIGHT", num == 1 and 6 or 1, 0)
         icon:Show()
         anchorFrame = icon
-    elseif (not enchantID and EnchantParts[itemframe.index] and EnchantParts[itemframe.index][1]) then
+    elseif (not enchantID and enchantSlotName) then
         if (qty == 6 and (itemframe.index==2 or itemframe.index==16 or itemframe.index==17)) then else
             num = num + 1
             icon = GetIconFrame(frame)
-            icon.title = ENCHANTS .. ": " .. (_G[EnchantParts[itemframe.index][2]] or EnchantParts[itemframe.index][2])
+            icon.title = ENCHANTS .. ": " .. (_G[enchantSlotName] or enchantSlotName)
             icon.bg:SetVertexColor(1, 0.2, 0.2, 0.6)
             icon.texture:SetTexture("Interface\\Cursor\\Quest") --QuestRepeatable
             icon:ClearAllPoints()

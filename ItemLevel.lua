@@ -541,13 +541,20 @@ end)
 
 local Caches = {}
 
+local function ShouldShowChatItemLevel(link, class, subclass, equipSlot)
+    return (((equipSlot and string.find(equipSlot, "INVTYPE_")) and SafeIsEquippableItem(link))
+        or (subclass and string.find(subclass, RELICSLOT)))
+end
+
 local function ChatItemLevel(Hyperlink)
-    if (Caches[Hyperlink]) then
-        return Caches[Hyperlink]
+    local originalHyperlink = Hyperlink
+    if (Caches[originalHyperlink]) then
+        return Caches[originalHyperlink]
     end
     local link = string.match(Hyperlink, "|H(.-)|h")
+    local displayText = string.match(Hyperlink, "|h%[(.-)%]|h")
     local count, level, name, _, quality, _, _, class, subclass, _, equipSlot = LibItemInfo:GetItemInfo(link)
-    if (tonumber(level) and level > 0) then
+    if (tonumber(level) and level > 0 and ShouldShowChatItemLevel(link, class, subclass, equipSlot)) then
         if (equipSlot == "INVTYPE_CLOAK" or equipSlot == "INVTYPE_TRINKET" or equipSlot == "INVTYPE_FINGER" or equipSlot == "INVTYPE_NECK") then
             level = format("%s(%s)", level, _G[equipSlot] or equipSlot)
         elseif (equipSlot and string.find(equipSlot, "INVTYPE_")) then
@@ -560,7 +567,7 @@ local function ChatItemLevel(Hyperlink)
             level = nil
         end
         if (level) then
-            local n, stats = 0, GetItemStats(link)
+            local n, stats = 0, GetItemStats(link) or {}
             for key, num in pairs(stats) do
                 if (string.find(key, "EMPTY_SOCKET_")) then
                     n = n + num
@@ -568,14 +575,13 @@ local function ChatItemLevel(Hyperlink)
             end
             local gem = string.rep("|TInterface\\ItemSocketingFrame\\UI-EmptySocket-Prismatic:0|t", n)
             if (quality == 6 and class == WEAPON) then gem = "" end
-            Hyperlink = Hyperlink:gsub("|h%[(.-)%]|h", "|h["..level..":"..name.."]|h"..gem)
+            Hyperlink = Hyperlink:gsub("|h%[(.-)%]|h", "|h["..level..":"..(displayText or name or "").."]|h"..gem)
         end
-        Caches[Hyperlink] = Hyperlink
     elseif (subclass and subclass == MOUNTS) then
         Hyperlink = Hyperlink:gsub("|h%[(.-)%]|h", "|h[("..subclass..")%1]|h")
-        Caches[Hyperlink] = Hyperlink
-    elseif (count == 0) then
-        Caches[Hyperlink] = Hyperlink
+    end
+    if (count == 0) then
+        Caches[originalHyperlink] = Hyperlink
     end
     return Hyperlink
 end

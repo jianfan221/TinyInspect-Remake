@@ -38,6 +38,7 @@ ns.L = {
     Chat                        = "聊天",
     Loot                        = "拾取",
     ShowGemAndEnchant           = "顯示寶石和附魔信息",
+    ShowUpgradeInfo             = "顯示裝備升級資訊",
 }
 
 BINDING_NAME_InspectRaidFrame = "顯示團隊觀察面板"

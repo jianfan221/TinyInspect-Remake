@@ -6,9 +6,9 @@
 local MAJOR, MINOR = "LibItemInfo.7000", 8
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 
-local GetItemInfo = GetItemInfo
-local GetItemStats = GetItemStats
-local GetDetailedItemLevelInfoAPI = C_Item.GetDetailedItemLevelInfo
+-- local GetItemInfo = GetItemInfo
+local GetItemStats = C_Item and C_Item.GetItemStats
+local GetDetailedItemLevelInfoAPI = C_Item and C_Item.GetDetailedItemLevelInfo
 
 local function GetContainerItemLink(bag, slot)
     local info = C_Container.GetContainerItemInfo(bag, slot)
@@ -42,6 +42,9 @@ end
 
 function lib:GetStatsViaAPI(link, stats)
     if (type(stats) ~= "table") then
+        return stats
+    end
+    if (type(GetItemStats) ~= "function") then
         return stats
     end
     local itemStats = GetItemStats(link)

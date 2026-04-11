@@ -39,6 +39,7 @@ if (C_Container and C_Container.GetContainerItemInfo) then
 end
 
 local GetItemStats = GetItemStats or C_Item.GetItemStats
+local GetInventoryItemDurability = GetInventoryItemDurability
 
 local function SafeNumber(value, fallback)
     if (type(value) ~= "number") then
@@ -464,6 +465,90 @@ LibEvent:attachEvent("MERCHANT_UPDATE", UpdateMerchantItemLevel)
 --   PaperDoll  --
 -------------------
 
+local CharacterPaperDollButtons = {
+    CharacterHeadSlot, CharacterNeckSlot, CharacterShoulderSlot, CharacterBackSlot, CharacterChestSlot, CharacterWristSlot,
+    CharacterHandsSlot, CharacterWaistSlot, CharacterLegsSlot, CharacterFeetSlot, CharacterFinger0Slot, CharacterFinger1Slot,
+    CharacterTrinket0Slot, CharacterTrinket1Slot, CharacterMainHandSlot, CharacterSecondaryHandSlot
+}
+
+local function SetFrameTextAnchor(fontString, parent, anchorPoint)
+    anchorPoint = anchorPoint or "BOTTOM"
+    local x, y = 0, 0
+    if (string.find(anchorPoint, "LEFT")) then
+        x = 2
+    elseif (string.find(anchorPoint, "RIGHT")) then
+        x = -2
+    end
+    if (string.find(anchorPoint, "TOP")) then
+        y = -2
+    elseif (string.find(anchorPoint, "BOTTOM")) then
+        y = 2
+    end
+    fontString:ClearAllPoints()
+    fontString:SetWidth(0)
+    fontString:SetPoint(anchorPoint, parent, anchorPoint, x, y)
+end
+
+local function GetDurabilityFrame(button)
+    if (not button) then return end
+    if (not button.TinyInspectDurabilityFrame) then
+        local fontAdjust = GetLocale():sub(1,2) == "zh" and 0 or -2
+        local anchor = button.IconBorder or button
+        local w, h = SafeGetSize(button, 32, 32)
+        local ww, hh = SafeGetSize(anchor, w, h)
+        if (ww <= 0 or hh <= 0) then
+            anchor = button.Icon or button.icon or button
+            w, h = SafeGetSize(anchor, w, h)
+        else
+            w, h = min(w, ww), min(h, hh)
+        end
+        if (w <= 0) then w = 32 end
+        if (h <= 0) then h = 32 end
+        button.TinyInspectDurabilityFrame = CreateFrame("Frame", nil, button)
+        button.TinyInspectDurabilityFrame:SetScale(max(0.75, h<32 and h/32 or 1))
+        button.TinyInspectDurabilityFrame:SetFrameLevel(111)
+        button.TinyInspectDurabilityFrame:SetSize(w, h)
+        button.TinyInspectDurabilityFrame:SetPoint("CENTER", anchor, "CENTER", 0, 0)
+        button.TinyInspectDurabilityFrame.text = button.TinyInspectDurabilityFrame:CreateFontString(nil, "OVERLAY")
+        button.TinyInspectDurabilityFrame.text:SetFont(STANDARD_TEXT_FONT, 11+fontAdjust, "OUTLINE")
+        button.TinyInspectDurabilityFrame.text:SetHeight(0)
+    end
+    return button.TinyInspectDurabilityFrame
+end
+
+local function SetDurabilityTextColor(fontString, percentage)
+    if (percentage > 66) then
+        fontString:SetTextColor(0, 1, 0)
+    elseif (percentage > 33) then
+        fontString:SetTextColor(1, 1, 0)
+    else
+        fontString:SetTextColor(1, 0, 0)
+    end
+end
+
+local function SetPaperDollDurability(button)
+    if (not button or not GetInventoryItemDurability) then return end
+    local frame = GetDurabilityFrame(button)
+    if (not frame or not frame.text) then return end
+
+    local current, maxDurability = GetInventoryItemDurability(button:GetID())
+    if (not current or not maxDurability or maxDurability <= 0) then
+        frame.text:SetText("")
+        return
+    end
+
+    local percentage = (current / maxDurability) * 100
+    SetFrameTextAnchor(frame.text, frame, TinyInspectRemakeDB and TinyInspectRemakeDB.GearDurabilityAnchorPoint or "BOTTOM")
+    SetDurabilityTextColor(frame.text, percentage)
+    frame.text:SetFormattedText("%.0f%%", percentage)
+end
+
+local function CharacterPaperDollDurabilityUpdate()
+    for _, button in ipairs(CharacterPaperDollButtons) do
+        SetPaperDollDurability(button)
+    end
+end
+
 local function SetPaperDollItemLevel(self, unit)
     if (not self) then return end
     local id = self:GetID()
@@ -489,14 +574,10 @@ local function SetPaperDollItemLevel(self, unit)
 end
 
 local function CharacterPaperDollItemUpdate()
-    for _, button in ipairs({
-         CharacterHeadSlot,CharacterNeckSlot,CharacterShoulderSlot,CharacterBackSlot,CharacterChestSlot,CharacterWristSlot,
-         CharacterHandsSlot,CharacterWaistSlot,CharacterLegsSlot,CharacterFeetSlot,CharacterFinger0Slot,CharacterFinger1Slot,
-         CharacterTrinket0Slot,CharacterTrinket1Slot,CharacterMainHandSlot,CharacterSecondaryHandSlot
-        -- , CharacterShirtSlot, CharacterTabardSlot
-        }) do
+    for _, button in ipairs(CharacterPaperDollButtons) do
         SetPaperDollItemLevel(button, "player")
     end
+    CharacterPaperDollDurabilityUpdate()
 end
 PaperDollFrame:HookScript("OnShow", function(self)
     CharacterPaperDollItemUpdate()
@@ -504,6 +585,16 @@ end)
 LibEvent:attachEvent("PLAYER_EQUIPMENT_CHANGED", function(self)
     if (CharacterFrame:IsShown()) then
         CharacterPaperDollItemUpdate()
+    end
+end)
+LibEvent:attachEvent("UPDATE_INVENTORY_DURABILITY", function(self)
+    if (CharacterFrame:IsShown()) then
+        CharacterPaperDollDurabilityUpdate()
+    end
+end)
+LibEvent:attachTrigger("ANCHOR_POINT_CHANGED", function(self, anchorkey)
+    if (anchorkey == "GearDurabilityAnchorPoint" and CharacterFrame:IsShown()) then
+        CharacterPaperDollDurabilityUpdate()
     end
 end)
 

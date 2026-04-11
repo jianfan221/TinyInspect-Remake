@@ -37,6 +37,9 @@ ns.L = {
     Chat                        = "Чат",
     --Loot                        = "",
     ShowGemAndEnchant           = "Show Gem And Enchant",
+    ShowUpgradeInfo             = "Show Upgrade Info",
+    ItemLevelAnchorPoint        = "Item Level Position",
+    GearDurabilityAnchorPoint   = "Durability Position",
 }
 
 BINDING_NAME_InspectRaidFrame = "рамку"

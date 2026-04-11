@@ -37,6 +37,8 @@ ns.L = {
     Loot                        = "拾取",
     ShowGemAndEnchant           = "显示宝石和附魔信息",
     ShowUpgradeInfo             = "显示装备升级信息",
+    ItemLevelAnchorPoint        = "装等位置",
+    GearDurabilityAnchorPoint   = "耐久度位置",
 }
 
 BINDING_NAME_InspectRaidFrame = "显示团队观察面板"

@@ -5,7 +5,7 @@
 
 local LibEvent = LibStub:GetLibrary("LibEvent.7000")
 
-local VERSION = 2.9
+local VERSION = 3.0
 
 local addon, ns = ...
 
@@ -50,6 +50,7 @@ local DefaultDB = {
     EnableMouseWeaponLevel = true,        --鼠標武器等級
     PaperDollItemLevelOutsideString = false, --PaperDoll文字外邊顯示(沒有在配置面板)
     ItemLevelAnchorPoint = "TOP",         --裝等位置
+    GearDurabilityAnchorPoint = "BOTTOM", --裝備耐久度位置
     ShowPluginGreenState = false,         --裝備綠字屬性前綴顯示
     ShowGemAndEnchant = true,             --显示宝石和附魔
 }
@@ -76,7 +77,10 @@ local options = {
         { key = "PaperDoll" },
         -- { key = "Loot" },
       },
-      anchorkey = "ItemLevelAnchorPoint",
+      anchors = {
+        { key = "ItemLevelAnchorPoint", xpos = 488, ypos = 44 },
+        { key = "GearDurabilityAnchorPoint", xpos = 598, ypos = 44 },
+      },
     },
     { key = "ShowInspectAngularBorder" },
     { key = "ShowInspectColoredLabel" },
@@ -179,7 +183,33 @@ local function CreateSubtypeFrame(list, parent, xpos, ypos)
     parent.SubtypeFrame:SetSize(168, #list*30+58)
 end
 
-local function CreateAnchorFrame(anchorkey, parent)
+local AnchorFrames = {}
+local AnchorPoints = {
+    "TOPLEFT", "LEFT", "BOTTOMLEFT",
+    "TOP", "BOTTOM",
+    "TOPRIGHT", "RIGHT", "BOTTOMRIGHT",
+    "CENTER",
+}
+
+local function UpdateAnchorFrame(frame)
+    if (not frame or not frame.anchorkey) then return end
+    local anchorPoint = TinyInspectRemakeDB and TinyInspectRemakeDB[frame.anchorkey]
+    for _, point in ipairs(AnchorPoints) do
+        if (frame[point]) then
+            frame[point]:GetNormalTexture():SetVertexColor(1, 1, 1)
+        end
+    end
+    if (anchorPoint and frame[anchorPoint]) then
+        frame[anchorPoint]:GetNormalTexture():SetVertexColor(1, 0.2, 0.1)
+    end
+end
+
+local function CreateAnchorFrame(anchorInfo, parent)
+    if (not anchorInfo) then return end
+    if (type(anchorInfo) ~= "table") then
+        anchorInfo = { key = anchorInfo }
+    end
+    local anchorkey = anchorInfo.key
     if (not anchorkey) then return end
     local CreateAnchorButton = function(frame, anchorPoint)
         local button = CreateFrame("Button", nil, frame)
@@ -187,18 +217,12 @@ local function CreateAnchorFrame(anchorkey, parent)
         button:SetSize(12, 12)
         button:SetPoint(anchorPoint)
         button:SetNormalTexture("Interface\\Buttons\\WHITE8X8")
-        if (TinyInspectRemakeDB[frame.anchorkey] == anchorPoint) then
-            button:GetNormalTexture():SetVertexColor(1, 0.2, 0.1)
-        end
         button:SetScript("OnClick", function(self)
             local parent = self:GetParent()
             local anchorPoint = self.anchorPoint
-            local anchorOrig = TinyInspectRemakeDB[parent.anchorkey]
-            if (parent[anchorOrig]) then
-                parent[anchorOrig]:GetNormalTexture():SetVertexColor(1, 1, 1)
-            end
-            self:GetNormalTexture():SetVertexColor(1, 0.2, 0.1)
             TinyInspectRemakeDB[parent.anchorkey] = anchorPoint
+            UpdateAnchorFrame(parent)
+            LibEvent:trigger("ANCHOR_POINT_CHANGED", parent.anchorkey, anchorPoint)
         end)
         frame[anchorPoint] = button
     end
@@ -213,16 +237,16 @@ local function CreateAnchorFrame(anchorkey, parent)
     frame:SetBackdropColor(0, 0, 0, 0.7)
     frame:SetBackdropBorderColor(1, 1, 1, 0)
     frame:SetSize(80, 80)
-    frame:SetPoint("TOPLEFT", parent, "TOPLEFT", 530, 44)
-    CreateAnchorButton(frame, "TOPLEFT")
-    CreateAnchorButton(frame, "LEFT")
-    CreateAnchorButton(frame, "BOTTOMLEFT")
-    CreateAnchorButton(frame, "TOP")
-    CreateAnchorButton(frame, "BOTTOM")
-    CreateAnchorButton(frame, "TOPRIGHT")
-    CreateAnchorButton(frame, "RIGHT")
-    CreateAnchorButton(frame, "BOTTOMRIGHT")
-    CreateAnchorButton(frame, "CENTER")
+    frame:SetPoint("TOPLEFT", parent, "TOPLEFT", anchorInfo.xpos or 530, anchorInfo.ypos or 44)
+    frame.title = frame:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+    frame.title:SetPoint("BOTTOM", frame, "TOP", 0, 3)
+    frame.title:SetWidth(anchorInfo.labelWidth or 100)
+    frame.title:SetText(L[anchorInfo.labelKey or anchorkey])
+    for _, point in ipairs(AnchorPoints) do
+        CreateAnchorButton(frame, point)
+    end
+    UpdateAnchorFrame(frame)
+    tinsert(AnchorFrames, frame)
 end
 
 local function CreateCheckbox(list, parent, anchor, offsetx, offsety)
@@ -240,7 +264,13 @@ local function CreateCheckbox(list, parent, anchor, offsetx, offsety)
         offsety = offsety + stepy
         offsety = CreateCheckbox(v.child, checkbox, anchor, offsetx+stepx, offsety)
         CreateSubtypeFrame(v.subtype, checkbox, v.subtype and v.subtype.xpos, v.subtype and v.subtype.ypos)
-        CreateAnchorFrame(v.anchorkey, checkbox)
+        if (v.anchors) then
+            for _, anchorInfo in ipairs(v.anchors) do
+                CreateAnchorFrame(anchorInfo, checkbox)
+            end
+        else
+            CreateAnchorFrame(v.anchorkey, checkbox)
+        end
     end
     return offsety
 end
@@ -284,6 +314,9 @@ LibEvent:attachEvent("VARIABLES_LOADED", function()
     TinyInspectRemakeDB.ShowCorruptedMark = nil
     TinyInspectRemakeDB.EnchantParts = nil
     InitCheckbox(frame)
+    for _, anchorFrame in ipairs(AnchorFrames) do
+        UpdateAnchorFrame(anchorFrame)
+    end
 end)
 
 if InterfaceOptions_AddCategory then

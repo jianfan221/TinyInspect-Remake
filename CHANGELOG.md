@@ -2,10 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.3.1] 2026-04-12
+- Added setting to toggle durability display on and off
+
 ## [v1.3.0] 2026-04-12
 - Added Durability display
 - Fixed an issue that secondary stats panel is not displayed
-
 
 ## [v1.2.0] 20226-04-07
 - Added upgrade info into inspect panel

@@ -516,6 +516,13 @@ local function GetDurabilityFrame(button)
     return button.TinyInspectDurabilityFrame
 end
 
+local function ClearPaperDollDurability(button)
+    local frame = button and button.TinyInspectDurabilityFrame
+    if (frame and frame.text) then
+        frame.text:SetText("")
+    end
+end
+
 local function SetDurabilityTextColor(fontString, percentage)
     if (percentage > 66) then
         fontString:SetTextColor(0, 1, 0)
@@ -527,7 +534,12 @@ local function SetDurabilityTextColor(fontString, percentage)
 end
 
 local function SetPaperDollDurability(button)
-    if (not button or not GetInventoryItemDurability) then return end
+    if (not button) then return end
+    if (TinyInspectRemakeDB and TinyInspectRemakeDB.ShowGearDurability == false) then
+        ClearPaperDollDurability(button)
+        return
+    end
+    if (not GetInventoryItemDurability) then return end
     local frame = GetDurabilityFrame(button)
     if (not frame or not frame.text) then return end
 
@@ -588,6 +600,11 @@ LibEvent:attachEvent("PLAYER_EQUIPMENT_CHANGED", function(self)
     end
 end)
 LibEvent:attachEvent("UPDATE_INVENTORY_DURABILITY", function(self)
+    if (CharacterFrame:IsShown()) then
+        CharacterPaperDollDurabilityUpdate()
+    end
+end)
+LibEvent:attachTrigger("GEAR_DURABILITY_DISPLAY_CHANGED", function(self)
     if (CharacterFrame:IsShown()) then
         CharacterPaperDollDurabilityUpdate()
     end

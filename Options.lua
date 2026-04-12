@@ -50,6 +50,7 @@ local DefaultDB = {
     EnableMouseWeaponLevel = true,        --鼠標武器等級
     PaperDollItemLevelOutsideString = false, --PaperDoll文字外邊顯示(沒有在配置面板)
     ItemLevelAnchorPoint = "TOP",         --裝等位置
+    ShowGearDurability = true,            --裝備耐久度顯示
     GearDurabilityAnchorPoint = "BOTTOM", --裝備耐久度位置
     ShowPluginGreenState = false,         --裝備綠字屬性前綴顯示
     ShowGemAndEnchant = true,             --显示宝石和附魔
@@ -81,6 +82,10 @@ local options = {
         { key = "ItemLevelAnchorPoint", xpos = 488, ypos = 44 },
         { key = "GearDurabilityAnchorPoint", xpos = 598, ypos = 44 },
       },
+    },
+    { key = "ShowGearDurability",
+        checkedFunc = function() LibEvent:trigger("GEAR_DURABILITY_DISPLAY_CHANGED") end,
+        uncheckedFunc = function() LibEvent:trigger("GEAR_DURABILITY_DISPLAY_CHANGED") end,
     },
     { key = "ShowInspectAngularBorder" },
     { key = "ShowInspectColoredLabel" },

@@ -40,6 +40,7 @@ ns.L = {
     ShowGemAndEnchant           = "顯示寶石和附魔信息",
     ShowUpgradeInfo             = "顯示裝備升級資訊",
     ItemLevelAnchorPoint        = "裝等位置",
+    ShowGearDurability          = "顯示裝備耐久度",
     GearDurabilityAnchorPoint   = "耐久度位置",
 }
 

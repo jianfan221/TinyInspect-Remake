@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.3.2] 2026-04-24
+- Fixed SetFont related error
+- Fixed errors caused by unit stats returned as secrete value in 12.05
+
 ## [v1.3.1] 2026-04-12
 - Added setting to toggle durability display on and off
 

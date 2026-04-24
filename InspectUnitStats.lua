@@ -72,6 +72,36 @@ function ShowInspectItemStatsFrame(frame, unit)
     }
     local statColor = { r = 0, g = 1, b = 0.2 }
     local mainStatColor = { r = 1, g = 0.82, b = 0 }
+    local primaryStatToKey = {
+        [1] = ITEM_MOD_STRENGTH_SHORT,
+        [2] = ITEM_MOD_AGILITY_SHORT,
+        [4] = ITEM_MOD_INTELLECT_SHORT,
+    }
+    local mainStatByClass = {
+        DEATHKNIGHT = ITEM_MOD_STRENGTH_SHORT,
+        DEMONHUNTER = ITEM_MOD_AGILITY_SHORT,
+        DRUID = ITEM_MOD_AGILITY_SHORT,
+        EVOKER = ITEM_MOD_INTELLECT_SHORT,
+        HUNTER = ITEM_MOD_AGILITY_SHORT,
+        MAGE = ITEM_MOD_INTELLECT_SHORT,
+        MONK = ITEM_MOD_AGILITY_SHORT,
+        PALADIN = ITEM_MOD_STRENGTH_SHORT,
+        PRIEST = ITEM_MOD_INTELLECT_SHORT,
+        ROGUE = ITEM_MOD_AGILITY_SHORT,
+        SHAMAN = ITEM_MOD_INTELLECT_SHORT,
+        WARLOCK = ITEM_MOD_INTELLECT_SHORT,
+        WARRIOR = ITEM_MOD_STRENGTH_SHORT,
+    }
+    local mainStatBySpecID = {
+        [65] = ITEM_MOD_INTELLECT_SHORT, -- Holy Paladin
+        [1480] = ITEM_MOD_INTELLECT_SHORT, -- Devourer Demon Hunter
+        [262] = ITEM_MOD_INTELLECT_SHORT, -- Elemental Shaman
+        [263] = ITEM_MOD_AGILITY_SHORT, -- Enhancement Shaman
+        [264] = ITEM_MOD_INTELLECT_SHORT, -- Restoration Shaman
+        [270] = ITEM_MOD_INTELLECT_SHORT, -- Mistweaver Monk
+        [102] = ITEM_MOD_INTELLECT_SHORT, -- Balance Druid
+        [105] = ITEM_MOD_INTELLECT_SHORT, -- Restoration Druid
+    }
     local function GetStatValueFromUnit(stats, key, unitToken)
         if (stats and stats[key] and stats[key].value) then
             return stats[key].value
@@ -91,19 +121,20 @@ function ShowInspectItemStatsFrame(frame, unit)
         end
     end
     local function GetMainStatKey(unitToken)
-        local _, str = UnitStat(unitToken, 1)
-        local _, agi = UnitStat(unitToken, 2)
-        local _, int = UnitStat(unitToken, 4)
-        str = str or 0
-        agi = agi or 0
-        int = int or 0
-        if (str >= agi and str >= int) then
-            return ITEM_MOD_STRENGTH_SHORT
-        elseif (agi >= str and agi >= int) then
-            return ITEM_MOD_AGILITY_SHORT
-        else
-            return ITEM_MOD_INTELLECT_SHORT
+        if (unitToken == "player" and type(GetSpecialization) == "function" and type(GetSpecializationInfo) == "function") then
+            local specIndex = GetSpecialization()
+            if (specIndex) then
+                local specID, _, _, _, _, primaryStat = GetSpecializationInfo(specIndex)
+                if (primaryStatToKey[primaryStat]) then
+                    return primaryStatToKey[primaryStat]
+                end
+                if (mainStatBySpecID[specID]) then
+                    return mainStatBySpecID[specID]
+                end
+            end
         end
+        local _, classFile = UnitClass(unitToken)
+        return mainStatByClass[classFile]
     end
     local function EnsureStatRow(index)
         local row = frame.statsFrame["stat"..index]

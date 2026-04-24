@@ -44,6 +44,7 @@ function ShowInspectItemStatsFrame(frame, unit)
             statsFrame["stat"..i].Background:SetVertexColor(0, 0, 0)
             statsFrame["stat"..i].Value:SetPoint("RIGHT", -64, 0)
             statsFrame["stat"..i].PlayerValue = statsFrame["stat"..i]:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+            statsFrame["stat"..i].PlayerValue:SetFontObject(statsFrame["stat"..i].Value:GetFontObject())
             statsFrame["stat"..i].PlayerValue:SetPoint("LEFT", statsFrame["stat"..i], "RIGHT", -54, 0)
         end
         local mask = statsFrame:CreateTexture()
@@ -116,6 +117,7 @@ function ShowInspectItemStatsFrame(frame, unit)
         row.Background:SetVertexColor(0, 0, 0)
         row.Value:SetPoint("RIGHT", -64, 0)
         row.PlayerValue = row:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+        row.PlayerValue:SetFontObject(row.Value:GetFontObject())
         row.PlayerValue:SetPoint("LEFT", row, "RIGHT", -54, 0)
         frame.statsFrame["stat"..index] = row
         return row
@@ -127,9 +129,10 @@ function ShowInspectItemStatsFrame(frame, unit)
     table.insert(baseInfo, {label = LEVEL, iv = UnitLevel(unit), pv = UnitLevel("player") })
     table.insert(baseInfo, {label = STAT_AVERAGE_ITEM_LEVEL, iv = format("%.1f",inspectItemLevel), pv = format("%.1f",playerItemLevel) })
     table.insert(baseInfo, {label = HEALTH, iv = AbbreviateLargeNumbers(UnitHealthMax(unit)), pv = AbbreviateLargeNumbers(UnitHealthMax("player")) })
-    local inspectMana = UnitPowerMax(unit, 0) or 0
-    local playerMana = UnitPowerMax("player", 0) or 0
-    table.insert(baseInfo, {label = MANA, iv = inspectMana > 0 and AbbreviateLargeNumbers(inspectMana) or "-", pv = playerMana > 0 and AbbreviateLargeNumbers(playerMana) or "-" })
+    -- Disabled for now: querying inspected-unit mana in this paperdoll path can taint.
+    -- local inspectMana = UnitPowerMax(unit, 0) or 0
+    -- local playerMana = UnitPowerMax("player", 0) or 0
+    -- table.insert(baseInfo, {label = MANA, iv = inspectMana > 0 and AbbreviateLargeNumbers(inspectMana) or "-", pv = playerMana > 0 and AbbreviateLargeNumbers(playerMana) or "-" })
     local index = 1
     for _, v in pairs(baseInfo) do
         local row = EnsureStatRow(index)

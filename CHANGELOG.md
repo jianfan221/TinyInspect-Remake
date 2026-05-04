@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.4.0]
+- Added tier set summary and option to turn it on or off
+
 ## [v1.3.2] 2026-04-24
 - Fixed SetFont related error
 - Fixed errors caused by unit stats returned as secrete value in 12.05

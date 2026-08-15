@@ -1,0 +1,15 @@
+package-as: TinyInspect-Remake
+
+# Libraries are bundled in the repository, so a separate no-library archive
+# would not be useful.
+enable-nolib-creation: no
+
+manual-changelog:
+  filename: CHANGELOG.md
+  markup-type: markdown
+
+ignore:
+  - .github
+  - .gitignore
+  - .vscode
+  - README.md

@@ -1,7 +1,7 @@
 ## Interface: 120100
 ## Title: TinyInspect-Remake
-## Version: v1.4.1
-## LastUpdated: 2026-08-15
+## Version: v1.5.0
+## LastUpdated: 2026-08-16
 ## Notes: Show ItemLevel For Inspect & Party & Raid & Mouse & Bag & Bank ...
 ## Notes-zhCN: 装等观察,装等显示
 ## Notes-zhTW: 裝等觀察,裝等顯示

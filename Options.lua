@@ -599,10 +599,10 @@ end)
 LibEvent:attachEvent("PLAYER_LOGIN", function()
     if (not TinyInspectRemakeDB) then return end
 
-    local announcementKey = rawget(L, "AnnouncementKey") or "announcement_2026_08_16_inspect_12_1"
+    local announcementKey = rawget(L, "AnnouncementKey") or "announcement_2026_08_16"
     local announcementTitle = rawget(L, "AnnouncementTitle") or "Announcement"
     local announcementChat = rawget(L, "AnnouncementChat") or
-        "TinyInspect-Remake will continue to receive updates for 12.1. If errors prevent normal gameplay, please temporarily disable the addon and wait for an update."
+        "Version 1.5.0 completely overhauled the settings page and added announcements, font settings, and other features. Use /ti to open the new settings page."
     local mode = TinyInspectRemakeDB.AnnouncementMode or "noticeAlways"
 
     if (mode == "noticeNever" or announcementKey == "") then

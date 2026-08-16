@@ -1,6 +1,11 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## [v1.5.0]
+- Refactored Setting Panel
+- Implemented Announcement feature
+- Added Font Setting
+
 
 ## [v1.4.1]
 - TOC update for 12.1

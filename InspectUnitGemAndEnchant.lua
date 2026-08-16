@@ -49,7 +49,7 @@ local ENCHANT_SLOT_NAMES = {
     [11] = "FINGER0SLOT",
     [12] = "FINGER1SLOT",
     [16] = "MAINHANDSLOT",
-    [17] = "SECONDARYHANDSLOT",
+    -- Retail off-hand weapons cannot be enchanted, so slot 17 is intentionally omitted.
 }
 
 local function GetEnchantIcon(enchantID, isDeathKnight)

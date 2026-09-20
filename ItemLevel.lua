@@ -2,6 +2,9 @@
 -------------------------------------
 -- 物品等級顯示 Author: M
 -------------------------------------
+local _, ns = ...
+local L = ns.L
+
 -- 兼容性补丁：防止旧版神器圣物函数报错
 if not IsArtifactRelicItem then
     IsArtifactRelicItem = function(link)
@@ -19,8 +22,7 @@ local ARMOR = ARMOR or "Armor"
 local WEAPON = WEAPON or "Weapon"
 local MOUNTS = MOUNTS or "Mount"
 local RELICSLOT = RELICSLOT or "Relic"
-local ARTIFACT_POWER = ARTIFACT_POWER or "Artifact"
-if (GetLocale():sub(1,2) == "zh") then ARTIFACT_POWER = "能量" end
+local ARTIFACT_POWER = L.ArtifactPower
 
 --fixed for 8.x
 local GetLootInfoByIndex = EJ_GetLootInfoByIndex

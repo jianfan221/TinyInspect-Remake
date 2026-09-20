@@ -36,7 +36,6 @@ jobs:
             locales \
             libs \
             texture \
-            Bindings.xml \
             dist/TinyInspect-Remake/
           cd dist
           zip -r "$PACKAGE_FILE" TinyInspect-Remake \

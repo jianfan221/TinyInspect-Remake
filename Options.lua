@@ -9,11 +9,7 @@ local VERSION = 4.0
 
 local addon, ns = ...
 
-local L = ns.L or {}
-
-setmetatable(L, { __index = function(_, k)
-    return k:gsub("([a-z])([A-Z])", "%1 %2")
-end})
+local L = ns.L
 
 local DefaultDB = {
     version = VERSION,                    --配置的版本號
@@ -374,7 +370,7 @@ end
 
 local INVALID_FONT_POPUP = "TINYINSPECT_REMAKE_INVALID_FONT"
 StaticPopupDialogs[INVALID_FONT_POPUP] = {
-    text = rawget(L, "InvalidFontMessage") or "The selected font '%s' is unavailable or is not a known game file. The change was not applied.",
+    text = L.InvalidFontMessage,
     button1 = OKAY,
     timeout = 0,
     whileDead = true,
@@ -599,10 +595,9 @@ end)
 LibEvent:attachEvent("PLAYER_LOGIN", function()
     if (not TinyInspectRemakeDB) then return end
 
-    local announcementKey = rawget(L, "AnnouncementKey") or "announcement_2026_08_16"
-    local announcementTitle = rawget(L, "AnnouncementTitle") or "Announcement"
-    local announcementChat = rawget(L, "AnnouncementChat") or
-        "Version 1.5.0 completely overhauled the settings page and added announcements, font settings, and other features. Use /ti to open the new settings page."
+    local announcementKey = L.AnnouncementKey
+    local announcementTitle = L.AnnouncementTitle
+    local announcementChat = L.AnnouncementChat
     local mode = TinyInspectRemakeDB.AnnouncementMode or "noticeAlways"
 
     if (mode == "noticeNever" or announcementKey == "") then

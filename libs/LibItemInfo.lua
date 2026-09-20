@@ -150,7 +150,14 @@ function lib:GetUnitItemInfo(unit, index, stats)
     end
     self:GetStatsViaAPI(link, stats)
     if (string.match(link, "item:(%d+):")) then
-        return 0, level, GetItemInfo(link)
+        local name, _, quality, itemLevel, minLevel, itemType, itemSubType, stackCount,
+            equipLocation, iconFileID, sellPrice, classID, subclassID, bindType,
+            expansionID, setID, isCraftingReagent = GetItemInfo(link)
+        -- Keep the original inventory link because it contains the equipped
+        -- item's enchant and gem IDs. GetItemInfo may return a normalized link.
+        return 0, level, name, link, quality, itemLevel, minLevel, itemType,
+            itemSubType, stackCount, equipLocation, iconFileID, sellPrice,
+            classID, subclassID, bindType, expansionID, setID, isCraftingReagent
     else
         return 0, level, link
     end

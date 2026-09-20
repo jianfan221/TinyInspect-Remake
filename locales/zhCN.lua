@@ -3,10 +3,11 @@ local _, ns = ...
 
 if (GetLocale() ~= "zhCN") then return end
 
-ns.L = {
+local L = ns.L
+local T = {
     AnnouncementTitle           = "公告",
-    AnnouncementKey             = "announcement_2026_08_16",
-    AnnouncementChat            = "1.5.0完全重构了设置页面并新增公告，字体设置等功能。可使用/ti访问全新的设置页面。",
+    AnnouncementKey             = "announcement_2026_09_07",
+    AnnouncementChat            = "1.5.1 修复了部分欧洲客户端无法正确显示观察面板标题字符的问题。",
     ShowItemBorder              = "物品直角边框",
     EnableItemLevel             = "物品等级显示",
     ShowColoredItemLevelString  = "装等文字随物品品质",
@@ -72,6 +73,12 @@ ns.L = {
     PositionAndDurability       = "位置与耐久度",
     Durability                  = "耐久度",
     InvalidFontMessage          = "所选字体“%s”不可用，或不是游戏已知文件。改动未生效。",
+    ItemLevelAbbreviation       = "装等",
+    RaidItemLevel               = "团队装等",
+    ArtifactPower               = "能量",
+    NotAvailable                = "不可用",
 }
 
-BINDING_NAME_InspectRaidFrame = "显示团队观察面板"
+for key, value in pairs(T) do
+    L[key] = value
+end

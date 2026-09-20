@@ -1,14 +1,13 @@
 
 local _, ns = ...
 
-BINDING_HEADER_TinyInspect = "TinyInspect"
-
 if (GetLocale() ~= "zhTW") then return end
 
-ns.L = {
+local L = ns.L
+local T = {
     AnnouncementTitle           = "公告",
-    AnnouncementKey             = "announcement_2026_08_16",
-    AnnouncementChat            = "1.5.0 完全重構了設定頁面，並新增公告、字體設定等功能。可使用 /ti 開啟全新的設定頁面。",
+    AnnouncementKey             = "announcement_2026_09_07",
+    AnnouncementChat            = "1.5.1 修正了部分歐洲客戶端無法正確顯示觀察面板標題字元的問題。",
     ShowItemBorder              = "物品直角邊框",
     EnableItemLevel             = "物品等級顯示",
     ShowColoredItemLevelString  = "裝等文字隨物品品質",
@@ -74,6 +73,12 @@ ns.L = {
     PositionAndDurability       = "位置與耐久度",
     Durability                  = "耐久度",
     InvalidFontMessage          = "所選字體「%s」無法使用，或不是遊戲已知檔案。變更未生效。",
+    ItemLevelAbbreviation       = "裝等",
+    RaidItemLevel               = "團隊裝等",
+    ArtifactPower               = "能量",
+    NotAvailable                = "無法取得",
 }
 
-BINDING_NAME_InspectRaidFrame = "顯示團隊觀察面板"
+for key, value in pairs(T) do
+    L[key] = value
+end
